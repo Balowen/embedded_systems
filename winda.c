@@ -6,13 +6,20 @@
 
 // --- Zmienne użytkownika ---
 char stan = 0;
-char stan_zawolania = 0;	// zmienne do switcha  wyswietlajacego gdzie przywoło winde
+char stan_zawolania = 0;	// zmienne do switcha  wyswietlajacego gdzie przywołano winde
 char stan_winda = 0;
+char stan_poruszanie = 0;
+
 int gdzieZawolano; p_gdzieZawolano;		// Liczba impulsów
 int tim;					// Czas impulsu
 int licz;					// Licznik impulsów
 
-int polozenieWindy; winda_dostepna; timW; liczW;
+int liczPor = 0; timP;	// zmienne do switcha wyswietlającego poruszanie windy
+float val;
+
+int polozenieWindy = 1; winda_dostepna; timW; liczW;
+int czas;
+
 void prolog(void)			// Inicjowanie programu (jednorazowo przy starcie)
 {
     L1 = L2 = L3 = L4 = 0;         	// Zgaszenie LED-ów
@@ -29,18 +36,30 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     switch (stan)
     {
     case 0:											// Stan startowy
-        polozenieWindy = 1;
-        gdzieZawolano = 0;
+        gdzieZawolano = p_gdzieZawolano;
+        stan_poruszanie = 0;
         winda_dostepna = 1;
+        czas = 150;
         stan = 1;
         break;
     case 1: 							
         L1 = 0;
-	    if (aK1 && !pK1) gdzieZawolano = 1;             // 1 piętro
-	    else if (aK2 && !pK2) gdzieZawolano = 2;         // 2 piętro
-	    else if (aK3 && !pK3) gdzieZawolano = 3;        // 3 piętro
-	    else {gdzieZawolano = 0;}
+        if(winda_dostepna){
+		    if (aK1 && !pK1) {gdzieZawolano = 1; stan =2;}             // 1 piętro
+		    else if (aK2 && !pK2) {gdzieZawolano = 2;stan =2;}         // 2 piętro
+		    else if (aK3 && !pK3) {gdzieZawolano = 3;stan =2;}        // 3 piętro
+		    else {gdzieZawolano = 0;}
+	    }
         break;
+    case 2:
+    	--czas;
+    	if(!czas) {
+    		polozenieWindy = gdzieZawolano;
+    		liczPor = 0; winda_dostepna =1;
+    		L3 = 0; stan_poruszanie = 0; stan = 0;
+    		}
+    	else if (polozenieWindy != gdzieZawolano) {winda_dostepna = 0; liczPor=4;}
+    	break;
     }
 
     // --- Generowanie serii impulsów na L1 - gdzie przywołano windę---
@@ -48,7 +67,7 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     {
     case 0: 
                 // jesli nie zawolano tam gdzie znajduje sie winda
-        if (gdzieZawolano && (gdzieZawolano != polozenieWindy)) 
+        if ( gdzieZawolano && (gdzieZawolano != polozenieWindy)) 
         {
         	winda_dostepna = 0;
             tim = 2;							// Impuls, L1=1;
@@ -63,14 +82,14 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     case 2: // Przerwa, L1=0;
         --tim;
         if (!tim && licz) { tim = 2; --licz; L1 = 1; stan_zawolania = 1; }  // =>kolejny impuls
-        else if (!tim && !licz && (polozenieWindy == gdzieZawolano)) { L1 = 0; winda_dostepna = 1; stan_zawolania = 0; } // =>koniec
+        else if (!tim && !licz ) { L1 = 0; winda_dostepna = 1; tim = 0; stan_zawolania = 0; } // =>koniec
         break;
     }
     
     
     
     
-    switch(stan_winda)
+    switch(stan_winda)				// na którym piętrze znajduje się winda	
     {
     
        case 0: // Stan jałowy (oczekiwanie), L1=0;
@@ -87,6 +106,28 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
             else if(!timW && !liczW) {L2=0; stan_winda=0;} // =>koniec
             break;
     }
+    
+    
+        // --- zagęszczane impulsy --- poruszanie się windy
+    switch(stan_poruszanie)
+    {
+        case 0: // Oczekiwanie
+            L3=0;           // OFF
+            if(liczPor) {timP=2; val=liczPor; stan_poruszanie=1;}        // => impuls
+            break;
+        case 1: // Impuls
+            L3=1;           // ON
+            if(timP) --timP;
+            if(!timP) {timP=2*(val+1); stan_poruszanie=2;}              // => przerwa
+            break;
+        case 2: // Przerwa
+            L3=0;           // OFF
+            if(timP) --timP;
+            if(!timP && val>0.0) {timP=2; val-=0.5; stan_poruszanie=1;} // => impuls
+            else if(!timP && val<=0.0) {timP=2; stan_poruszanie=1;}     // => impuls
+            break;
+    }
+
     
     
     
@@ -127,9 +168,9 @@ void wykres(void)			// Dane do tabeli i wykresu (dot. symulacji obiektu)
     bTab[9] = (int)L4;
     bTab[10] = (int)L5;
     bTab[11] = (int)L6;
-    bTab[12] = stan;
+    bTab[12] = czas;
     bTab[13] = gdzieZawolano;
     bTab[14] = tim;
-    bTab[15] = licz;
+    bTab[15] = polozenieWindy;
 }
 #endif
