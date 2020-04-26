@@ -6,11 +6,13 @@
 
 // --- Zmienne użytkownika ---
 char stan = 0;
-char stan_zawolania = 0;	// zmienne do switcha  wyswietlajacego stan przywołania windy
+char stan_zawolania = 0;	// zmienne do switcha  wyswietlajacego gdzie przywoło winde
+char stan_winda = 0;
 int gdzieZawolano; p_gdzieZawolano;		// Liczba impulsów
 int tim;					// Czas impulsu
 int licz;					// Licznik impulsów
-int polozenieWindy; winda_dostepna;
+
+int polozenieWindy; winda_dostepna; timW; liczW;
 void prolog(void)			// Inicjowanie programu (jednorazowo przy starcie)
 {
     L1 = L2 = L3 = L4 = 0;         	// Zgaszenie LED-ów
@@ -66,7 +68,25 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     }
     
     
-
+    
+    
+    switch(stan_winda)
+    {
+    
+       case 0: // Stan jałowy (oczekiwanie), L1=0;
+            if(polozenieWindy) {timW=10; liczW=polozenieWindy-1; L2=1; stan_winda=1;}
+            break;
+       case 1: // Impuls, L1=1;
+            --timW;
+            if(!timW && liczW) {timW=10; L2=0; stan_winda=2;}          // =>krótka przerwa
+            else if(!timW && !liczW) {timW=30; L2=0; stan_winda=2;}   // =>długa przerwa
+            break;
+       case 2: // Przerwa, L1=0;
+            --timW;
+            if(!timW && liczW) {timW=10; --liczW; L2=1; stan_winda=1;}  // =>kolejny impuls
+            else if(!timW && !liczW) {L2=0; stan_winda=0;} // =>koniec
+            break;
+    }
     
     
     
