@@ -59,6 +59,7 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     		L3 = 0; stan_poruszanie = 0; stan = 0;
     		}
     	else if (polozenieWindy != gdzieZawolano) {winda_dostepna = 0; liczPor=4;}
+    	else stan = 0;
     	break;
     }
 
