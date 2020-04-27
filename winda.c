@@ -21,6 +21,7 @@ float val;
 int polozenieWindy = 1; winda_dostepna; timW; liczW;
 int czas;
 
+<<<<<<< Updated upstream
 int liczWybor; timWybor; timPoczekaj;	// liczba naciśnieć K4
 int timK4;
 
@@ -64,10 +65,13 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
         break;
     case 2:										// stan poruszania się windy
     	
+=======
+>>>>>>> Stashed changes
     	if(!czas) {
     		polozenieWindy = gdzieZawolano;
     		liczPor = 0; winda_dostepna =1;
     		L3 = 0; stan_poruszanie = 0; stan = 0;
+<<<<<<< Updated upstream
     		}
     	else if (polozenieWindy != gdzieZawolano) {winda_dostepna = 0; liczPor=4; --czas;}
     	else stan = 0;
@@ -104,6 +108,7 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     switch(stan_winda)				// na którym piętrze znajduje się winda	
     {
     
+<<<<<<< Updated upstream
        case 0: // o ile winda się nie porusza, wyświetlaj gdzie jest 
             if(polozenieWindy && stan != 2) {timW=10; liczW=polozenieWindy-1; L2=1; stan_winda=1;}
             break;
@@ -147,6 +152,7 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     case 0:
     	// jesli winda sie nie porusza to mozna wybrac pietro z przycisku
     	
+<<<<<<< Updated upstream
     	if(timWybor && !timPoczekaj && winda_dostepna && stan!=2) {timWybor = 60;stan_wybor = 1;}
     	break;
     case 1:
@@ -156,6 +162,8 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
 		    if(timWybor &&liczWybor < 3) { liczWybor++; timK4=40; }	// Kontynuacja zliczania
 		  // 	else if(liczWybor == 3) liczWybor = 3;
 		  	//if(liczWybor >= 3) {liczWybor = 0;stan_wybor = 3;}
+=======
+>>>>>>> Stashed changes
 		    else  { liczWybor=0; timK4=40; timWybor = 60;}		// Nowe zliczanie
 		}
 		if(!timWybor&&!timK4&& liczWybor) stan_wybor = 2;	// Czas trwania impulsu
@@ -167,6 +175,7 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     	if(timWybor) --timWybor;
     	break;
 	case 2:
+<<<<<<< Updated upstream
 		if(polozenieWindy!= liczWybor){ gdzieZawolano = liczWybor; stan = 2;}
 		stan_wybor = 0;
 		timWybor = 60;
@@ -174,6 +183,7 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
 		break;
 	case 3:
 		timWybor = 60;
+<<<<<<< Updated upstream
 		liczWybor = 0;
 		timPoczekaj = 40;stan_wybor = 0;
 		break;
