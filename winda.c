@@ -58,7 +58,7 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
 		    if (aK1 && !pK1) {gdzieZawolano = 1; stan =2;}             // 1 piętro
 		    else if (aK2 && !pK2) {gdzieZawolano = 2;stan =2;}         // 2 piętro
 		    else if (aK3 && !pK3) {gdzieZawolano = 3;stan =2;}        // 3 piętro
-		  //  else if (aK4 && !pK4 && !timPoczekaj) stan_wybor = 0;
+		   // else if (aK4 && !pK4 && !timPoczekaj) {timWybor = 60; stan_wybor = 1;}
 		    else {gdzieZawolano = 0;}
 	    }
         break;
@@ -146,33 +146,34 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     {
     case 0:
     	// jesli winda sie nie porusza to mozna wybrac pietro z przycisku
-    	if(!timPoczekaj && winda_dostepna && stan!=2) {timWybor = 60;stan_wybor = 1;}
-    	else L4 = 0;
-    	--timPoczekaj;
+    	
+    	if(timWybor && !timPoczekaj && winda_dostepna && stan!=2) {timWybor = 60;stan_wybor = 1;}
     	break;
     case 1:
     	// mozna wybrać piętro lub otworzyć drzwi
 		if(aK4 && !pK4) 			
 		{ 
-		    if(timK4 && liczWybor < 3) { liczWybor++; timK4=40; }	// Kontynuacja zliczania
+		    if(timWybor &&liczWybor < 3) { liczWybor++; timK4=40; }	// Kontynuacja zliczania
 		  // 	else if(liczWybor == 3) liczWybor = 3;
-		  	else if(liczWybor >= 3) {liczWybor = 0;stan_wybor = 3;}
-		    else  { liczWybor=1; timK4=40; timWybor = 60;}		// Nowe zliczanie
+		  	//if(liczWybor >= 3) {liczWybor = 0;stan_wybor = 3;}
+		    else  { liczWybor=0; timK4=40; timWybor = 60;}		// Nowe zliczanie
 		}
-		if(!timWybor&&!timK4&& (liczWybor<=3)) stan_wybor = 2;	// Czas trwania impulsu
+		if(!timWybor&&!timK4&& liczWybor) stan_wybor = 2;	// Czas trwania impulsu
 		
 		if(!timWybor && aK4 && pK4) stan_wybor = 3; // jesli sie pomylimy, wystarczy przytrzymac aK4		
-		else if(!timWybor && liczWybor==0) {stan_wybor = 0; timWybor = 60;}		// jesli nie wybrano nic
+		if(!timWybor && liczWybor==0) {stan_wybor = 0; timWybor = 60;}		// jesli nie wybrano nic
+		
     	if(timK4) --timK4;
     	if(timWybor) --timWybor;
     	break;
 	case 2:
 		if(polozenieWindy!= liczWybor){ gdzieZawolano = liczWybor; stan = 2;}
 		stan_wybor = 0;
+		timWybor = 60;
 		liczWybor=0;
 		break;
 	case 3:
-		timWybor = 0;
+		timWybor = 60;
 		liczWybor = 0;
 		timPoczekaj = 40;stan_wybor = 0;
 		break;
@@ -215,8 +216,8 @@ void wykres(void)			// Dane do tabeli i wykresu (dot. symulacji obiektu)
     bTab[10] = (int)L5;
     bTab[11] = (int)L6;
     bTab[12] = timWybor;
-    bTab[13] = gdzieZawolano;
-    bTab[14] = liczWybor;
-    bTab[15] = polozenieWindy;
+    bTab[13] = stan_wybor;
+    bTab[14] = gdzieZawolano;
+    bTab[15] = liczWybor;
 }
 #endif
