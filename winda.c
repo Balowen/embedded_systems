@@ -23,6 +23,9 @@ int czas;
 
 <<<<<<< Updated upstream
 int liczWybor; timWybor; timPoczekaj;	// liczba naciśnieć K4
+=======
+int liczWybor; timWybor; 	// liczba naciśnieć K4
+>>>>>>> Stashed changes
 int timK4;
 
 void prolog(void)			// Inicjowanie programu (jednorazowo przy starcie)
@@ -64,6 +67,7 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
 	    }
         break;
     case 2:										// stan poruszania się windy
+<<<<<<< Updated upstream
     	
 =======
 >>>>>>> Stashed changes
@@ -74,6 +78,10 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
 <<<<<<< Updated upstream
     		}
     	else if (polozenieWindy != gdzieZawolano) {winda_dostepna = 0; liczPor=4; --czas;}
+=======
+    		}									// L4 - drzwi zablokowane bo winda sie rusza
+    	else if (polozenieWindy != gdzieZawolano) { L4 = 0; winda_dostepna = 0; liczPor=4; --czas;}
+>>>>>>> Stashed changes
     	else stan = 0;
     	break;
     }
@@ -111,6 +119,14 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
 <<<<<<< Updated upstream
        case 0: // o ile winda się nie porusza, wyświetlaj gdzie jest 
             if(polozenieWindy && stan != 2) {timW=10; liczW=polozenieWindy-1; L2=1; stan_winda=1;}
+=======
+       case 0: 				// o ile winda się nie porusza, wyświetlaj gdzie jest ( i że drzwi mogą być otwierane L4)
+            if(polozenieWindy && stan != 2){
+            timW=10; liczW=polozenieWindy-1;
+            L2=1; L4 =1;
+            stan_winda=1;
+            }
+>>>>>>> Stashed changes
             break;
        case 1: // Impuls, L1=1;
             --timW;
@@ -154,12 +170,16 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     	
 <<<<<<< Updated upstream
     	if(timWybor && !timPoczekaj && winda_dostepna && stan!=2) {timWybor = 60;stan_wybor = 1;}
+=======
+    	if(timWybor && winda_dostepna && stan!=2) {timWybor = 60;stan_wybor = 1;}
+>>>>>>> Stashed changes
     	break;
     case 1:
     	// mozna wybrać piętro lub otworzyć drzwi
 		if(aK4 && !pK4) 			
 		{ 
 		    if(timWybor &&liczWybor < 3) { liczWybor++; timK4=40; }	// Kontynuacja zliczania
+<<<<<<< Updated upstream
 		  // 	else if(liczWybor == 3) liczWybor = 3;
 		  	//if(liczWybor >= 3) {liczWybor = 0;stan_wybor = 3;}
 =======
@@ -177,6 +197,10 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
 	case 2:
 <<<<<<< Updated upstream
 		if(polozenieWindy!= liczWybor){ gdzieZawolano = liczWybor; stan = 2;}
+=======
+		// zablokowanie drzwi gdy juz wybrano pietro
+		if(polozenieWindy!= liczWybor){L4 = 0; gdzieZawolano = liczWybor; stan = 2;}
+>>>>>>> Stashed changes
 		stan_wybor = 0;
 		timWybor = 60;
 		liczWybor=0;
@@ -186,6 +210,9 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
 <<<<<<< Updated upstream
 		liczWybor = 0;
 		timPoczekaj = 40;stan_wybor = 0;
+=======
+		liczWybor = 0;stan_wybor = 0;
+>>>>>>> Stashed changes
 		break;
 	}
     
