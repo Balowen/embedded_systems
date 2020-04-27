@@ -94,7 +94,7 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     {
     
        case 0: // Stan jałowy (oczekiwanie), L1=0;
-            if(polozenieWindy) {timW=10; liczW=polozenieWindy-1; L2=1; stan_winda=1;}
+            if(polozenieWindy && stan != 2) {timW=10; liczW=polozenieWindy-1; L2=1; stan_winda=1;}
             break;
        case 1: // Impuls, L1=1;
             --timW;
