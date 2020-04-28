@@ -21,7 +21,7 @@ float val;
 int polozenieWindy = 1; winda_dostepna; timW; liczW;
 int czas;
 
-int liczWybor; timWybor; timPoczekaj;	// liczba naciśnieć K4
+int liczWybor; timWybor; 	// liczba naciśnieć K4
 int timK4;
 
 void prolog(void)			// Inicjowanie programu (jednorazowo przy starcie)
@@ -48,28 +48,24 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
         stan_poruszanie = 0;
         winda_dostepna = 1;
     //    liczWybor = 0;
-    	timWybor = 60;
+    	timWybor = 40;
         czas = 150;
         stan = 1;
         break;
     case 1: 						 	// stan możliwości przywołania windy		
         L1 = 0;
-        if(winda_dostepna){
-		    if (aK1 && !pK1) {gdzieZawolano = 1; stan =2;}             // 1 piętro
-		    else if (aK2 && !pK2) {gdzieZawolano = 2;stan =2;}         // 2 piętro
-		    else if (aK3 && !pK3) {gdzieZawolano = 3;stan =2;}        // 3 piętro
-		   // else if (aK4 && !pK4 && !timPoczekaj) {timWybor = 60; stan_wybor = 1;}
-		    else {gdzieZawolano = 0;}
-	    }
+		if (aK1 && !pK1 && winda_dostepna) {gdzieZawolano = 1; stan =2;}             // 1 piętro
+		else if (aK2 && !pK2 && winda_dostepna) {gdzieZawolano = 2;stan =2;}         // 2 piętro
+		else if (aK3 && !pK3 && winda_dostepna) {gdzieZawolano = 3;stan =2;}        // 3 piętro
+		else {gdzieZawolano = 0;}
         break;
     case 2:										// stan poruszania się windy
-    	
     	if(!czas) {
     		polozenieWindy = gdzieZawolano;
     		liczPor = 0; winda_dostepna =1;
     		L3 = 0; stan_poruszanie = 0; stan = 0;
-    		}
-    	else if (polozenieWindy != gdzieZawolano) {winda_dostepna = 0; liczPor=4; --czas;}
+    		}									// L4 - drzwi zablokowane bo winda sie rusza
+    	else if (polozenieWindy != gdzieZawolano) { L4 = 0; winda_dostepna = 0; liczPor=4; --czas;}
     	else stan = 0;
     	break;
     }
@@ -104,8 +100,12 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     switch(stan_winda)				// na którym piętrze znajduje się winda	
     {
     
-       case 0: // o ile winda się nie porusza, wyświetlaj gdzie jest 
-            if(polozenieWindy && stan != 2) {timW=10; liczW=polozenieWindy-1; L2=1; stan_winda=1;}
+       case 0: 				// o ile winda się nie porusza, wyświetlaj gdzie jest ( i że drzwi mogą być otwierane L4)
+            if(polozenieWindy && stan != 2){
+            timW=10; liczW=polozenieWindy-1;
+            L2=1; L4 =1;
+            stan_winda=1;
+            }
             break;
        case 1: // Impuls, L1=1;
             --timW;
@@ -147,35 +147,33 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     case 0:
     	// jesli winda sie nie porusza to mozna wybrac pietro z przycisku
     	
-    	if(timWybor && !timPoczekaj && winda_dostepna && stan!=2) {timWybor = 60;stan_wybor = 1;}
+    	if( winda_dostepna && stan!=2) {timWybor = 40;stan_wybor = 1;}
     	break;
     case 1:
     	// mozna wybrać piętro lub otworzyć drzwi
 		if(aK4 && !pK4) 			
 		{ 
-		    if(timWybor &&liczWybor < 3) { liczWybor++; timK4=40; }	// Kontynuacja zliczania
-		  // 	else if(liczWybor == 3) liczWybor = 3;
-		  	//if(liczWybor >= 3) {liczWybor = 0;stan_wybor = 3;}
-		    else  { liczWybor=0; timK4=40; timWybor = 60;}		// Nowe zliczanie
+		    if(timWybor &&liczWybor < 3) { liczWybor++; timK4=40; timWybor+=10; }	// Kontynuacja zliczania
+		    else  { liczWybor=0; timK4=40; timWybor = 30;}		// Nowe zliczanie
 		}
 		if(!timWybor&&!timK4&& liczWybor) stan_wybor = 2;	// Czas trwania impulsu
 		
 		if(!timWybor && aK4 && pK4) stan_wybor = 3; // jesli sie pomylimy, wystarczy przytrzymac aK4		
-		if(!timWybor && liczWybor==0) {stan_wybor = 0; timWybor = 60;}		// jesli nie wybrano nic
+		if(!timWybor && liczWybor==0) stan_wybor = 0;	// jesli nie wybrano nic
 		
     	if(timK4) --timK4;
     	if(timWybor) --timWybor;
     	break;
 	case 2:
-		if(polozenieWindy!= liczWybor){ gdzieZawolano = liczWybor; stan = 2;}
+		// zablokowanie drzwi gdy juz wybrano pietro
+		if(polozenieWindy!= liczWybor){L4 = 0; gdzieZawolano = liczWybor; stan = 2;}
 		stan_wybor = 0;
-		timWybor = 60;
+		timWybor = 30;
 		liczWybor=0;
 		break;
 	case 3:
-		timWybor = 60;
-		liczWybor = 0;
-		timPoczekaj = 40;stan_wybor = 0;
+		timWybor = 30;
+		liczWybor = 0;stan_wybor = 0;
 		break;
 	}
     
