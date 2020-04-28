@@ -130,7 +130,12 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     {
         case 0: // Oczekiwanie
             L3=0;           // OFF
-            if(liczPor) {timP=2; val=liczPor; stan_poruszanie=1;}        // => impuls
+            if(liczPor) {
+	            timP=2;
+	            czas = abs(polozenieWindy-gdzieZawolano)*100;
+	            val=liczPor; 
+	            stan_poruszanie=1;
+            }        // => impuls
             break;
         case 1: // Impuls
             L3=1;           // ON
@@ -189,7 +194,7 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
  }   
 
 
-void przerwanie(void)      	// Obsługs przerwania od układu czasowo-licznikowego
+void przerwanie(void)      	// Obsługa przerwania od układu czasowo-licznikowego
 {}
 
 void komunikacja(void)		// Obsługa komunikacji szeregowej
