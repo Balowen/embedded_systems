@@ -47,8 +47,7 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
         gdzieZawolano = p_gdzieZawolano;
         stan_poruszanie = 0;
         winda_dostepna = 1;
-    //    liczWybor = 0;
-    	timWybor = 40;
+    	timWybor = 30;
         czas = 150;
         stan = 1;
         break;
@@ -90,7 +89,12 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     case 2: // Przerwa, L1=0;
         --tim;
         if (!tim && licz) { tim = 2; --licz; L1 = 1; stan_zawolania = 1; }  // =>kolejny impuls
-        else if (!tim && !licz ) { L1 = 0; winda_dostepna = 1; tim = 0; stan_zawolania = 0; } // =>koniec
+        else if (!tim && !licz ) {
+	        L1 = 0;
+	        winda_dostepna = 1;
+	        tim = 0;
+	        stan_zawolania = 0;// =>koniec
+        } 
         break;
     }
     
@@ -100,7 +104,8 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     switch(stan_winda)				// na którym piętrze znajduje się winda	
     {
     
-       case 0: 				// o ile winda się nie porusza, wyświetlaj gdzie jest ( i że drzwi mogą być otwierane L4)
+       case 0: 				// o ile winda się nie porusza, wyświetlaj gdzie jest
+       						// ( i że drzwi mogą być otwierane L4)
             if(polozenieWindy && stan != 2){
             timW=10; liczW=polozenieWindy-1;
             L2=1; L4 =1;
@@ -150,28 +155,29 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     	if( winda_dostepna && stan!=2) {timWybor = 40;stan_wybor = 1;}
     	break;
     case 1:
-    	// mozna wybrać piętro lub otworzyć drzwi
+    	// mozna wybrać piętro
 		if(aK4 && !pK4) 			
 		{ 
-		    if(timWybor &&liczWybor < 3) { liczWybor++; timWybor+=10; }	// Kontynuacja zliczania
+		    if(timWybor &&liczWybor < 3) { liczWybor++; timWybor=30; }	// Kontynuacja zliczania
 		    else  { liczWybor=0; timWybor = 30;}		// Nowe zliczanie
 		}
 		if(!timWybor && liczWybor) stan_wybor = 2;	// Czas trwania impulsu
 		else if(!timWybor && liczWybor==0) stan_wybor = 0;	// jesli nie wybrano nic
 		
-		if(!timWybor && aK4 && pK4) stan_wybor = 3; // jesli sie pomylimy, wystarczy przytrzymac aK4		
+		// jesli sie pomylimy, wystarczy przytrzymac aK4, lub kliknąć czwarty raz
+		else if(!timWybor && aK4 && pK4) stan_wybor = 3;		
 		
 		
     	if(timWybor) --timWybor;
     	break;
-	case 2:
+	case 2:	// stan wysyłający windę po poprawnym wybraniu piętra przez aK4
 		// zablokowanie drzwi gdy juz wybrano pietro
 		if(polozenieWindy!= liczWybor){L4 = 0; gdzieZawolano = liczWybor; stan = 2;}
 		stan_wybor = 0;
 		timWybor = 30;
 		liczWybor=0;
 		break;
-	case 3:
+	case 3:	// wyresetowanie parametrów po "pomyłce"
 		timWybor = 30;
 		liczWybor = 0;stan_wybor = 0;
 		break;
