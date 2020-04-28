@@ -153,15 +153,15 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     	// mozna wybrać piętro lub otworzyć drzwi
 		if(aK4 && !pK4) 			
 		{ 
-		    if(timWybor &&liczWybor < 3) { liczWybor++; timK4=40; timWybor+=10; }	// Kontynuacja zliczania
-		    else  { liczWybor=0; timK4=40; timWybor = 30;}		// Nowe zliczanie
+		    if(timWybor &&liczWybor < 3) { liczWybor++; timWybor+=10; }	// Kontynuacja zliczania
+		    else  { liczWybor=0; timWybor = 30;}		// Nowe zliczanie
 		}
-		if(!timWybor&&!timK4&& liczWybor) stan_wybor = 2;	// Czas trwania impulsu
+		if(!timWybor && liczWybor) stan_wybor = 2;	// Czas trwania impulsu
+		else if(!timWybor && liczWybor==0) stan_wybor = 0;	// jesli nie wybrano nic
 		
 		if(!timWybor && aK4 && pK4) stan_wybor = 3; // jesli sie pomylimy, wystarczy przytrzymac aK4		
-		if(!timWybor && liczWybor==0) stan_wybor = 0;	// jesli nie wybrano nic
 		
-    	if(timK4) --timK4;
+		
     	if(timWybor) --timWybor;
     	break;
 	case 2:
