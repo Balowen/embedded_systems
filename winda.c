@@ -1,26 +1,32 @@
 ﻿/*************************************************************************/
-// symulator windy w trzypiętrowym budynku                                                  
+// symulator windy w trzypiętrowym budynku
+// Autor: Bartłomiej Nawój                                                   
 /*************************************************************************/
 #include "spsym.h"         	// Pomocnicze funkcje i deklaracje
 #include <stdio.h>         	// Standardowe I/O
 
 // --- Zmienne użytkownika ---
 char stan = 0;
-char stan_zawolania = 0;	// zmienne do switcha  wyswietlajacego gdzie przywołano winde
+char stan_zawolania = 0;	
 char stan_winda = 0;
 char stan_poruszanie = 0;
 char stan_wybor = 0;
 
-int gdzieZawolano; p_gdzieZawolano;		// Liczba impulsów
-int tim;					// Czas impulsu
-int licz;					// Licznik impulsów
-
-int liczPor = 0; timP;	// zmienne do switcha wyswietlającego poruszanie windy
+// zmienne do switcha  wyswietlajacego gdzie przywołano winde
+int gdzieZawolano; p_gdzieZawolano;		
+int tim;					
+int licz;		
+			
+// zmienne do switcha wyswietlającego poruszanie windy
+int liczPor = 0; timP;	
 float val;
 
-int polozenieWindy = 1; winda_dostepna; timW; liczW;
+//  zmienne do switcha wyswietlającego polozenie windy
+int polozenieWindy = 1; winda_dostepna;
+int timW; liczW; // czas impulsu i licznik impulsów
 int czas;
 
+// zmienne do switcha odpowiadajacego za przycisk wyboru piętra
 int liczWybor; timWybor; 	// liczba naciśnieć K4
 int timK4;
 
@@ -34,11 +40,6 @@ void prolog(void)			// Inicjowanie programu (jednorazowo przy starcie)
 
 void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
 {
-
-
-
-
-    // --- Zadawanie liczby impulsów - gdzie przywołano windę ---
 
 
     switch (stan)
@@ -61,8 +62,8 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     case 2:										// stan poruszania się windy
     	if(!czas) {
     		polozenieWindy = gdzieZawolano;
-    		liczPor = 0; winda_dostepna =1;
-    		L3 = 0; stan_poruszanie = 0; stan = 0;
+    		liczPor = 0;
+    		L3 = 0;  stan = 0;
     		}									// L4 - drzwi zablokowane bo winda sie rusza
     	else if (polozenieWindy != gdzieZawolano) { L4 = 0; winda_dostepna = 0; liczPor=4; --czas;}
     	else stan = 0;
@@ -106,7 +107,7 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     
        case 0: 				// o ile winda się nie porusza, wyświetlaj gdzie jest
        						// ( i że drzwi mogą być otwierane L4)
-            if(polozenieWindy && stan != 2){
+            if( stan != 2){
             timW=10; liczW=polozenieWindy-1;
             L2=1; L4 =1;
             stan_winda=1;
@@ -132,6 +133,7 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
             L3=0;           // OFF
             if(liczPor) {
 	            timP=2;
+	            // długość jazdy windy zależna od liczby pięter do przejechania
 	            czas = abs(polozenieWindy-gdzieZawolano)*100;
 	            val=liczPor; 
 	            stan_poruszanie=1;
@@ -151,7 +153,7 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     }
 
     
-	    // -- wybór piętra aK4 (gdzie wysłać windę) i czy można otworzyć drzwi
+	// -- wybór piętra aK4 (gdzie wysłać windę) i czy można otworzyć drzwi
     switch(stan_wybor)
     {
     case 0:
@@ -163,17 +165,19 @@ void oblicz(void)            // Kod użytkownika wykonywany cyklicznie
     	// mozna wybrać piętro
 		if(aK4 && !pK4) 			
 		{ 
-		    if(timWybor &&liczWybor < 3) { liczWybor++; timWybor=30; }	// Kontynuacja zliczania
+			// Kontynuacja zliczania
+		    if(timWybor &&liczWybor < 3) { liczWybor++; timWybor=30; }	
 		    else  { liczWybor=0; timWybor = 30;}		// Nowe zliczanie
 		}
-		if(!timWybor && liczWybor) stan_wybor = 2;	// Czas trwania impulsu
-		else if(!timWybor && liczWybor==0) stan_wybor = 0;	// jesli nie wybrano nic
+		// Czas trwania impulsu
+		if(!timWybor && liczWybor) stan_wybor = 2;
+		// jesli nie wybrano nic
+		else if(!timWybor && liczWybor==0) stan_wybor = 0;	
 		
 		// jesli sie pomylimy, wystarczy przytrzymac aK4, lub kliknąć czwarty raz
-		else if(!timWybor && aK4 && pK4) stan_wybor = 3;		
+		else if(!timWybor && aK4 && pK4) stan_wybor = 3;
 		
-		
-    	if(timWybor) --timWybor;
+		if(timWybor) --timWybor;
     	break;
 	case 2:	// stan wysyłający windę po poprawnym wybraniu piętra przez aK4
 		// zablokowanie drzwi gdy juz wybrano pietro
@@ -225,7 +229,7 @@ void wykres(void)			// Dane do tabeli i wykresu (dot. symulacji obiektu)
     bTab[10] = (int)L5;
     bTab[11] = (int)L6;
     bTab[12] = timWybor;
-    bTab[13] = stan_wybor;
+    bTab[13] = stan_winda;
     bTab[14] = gdzieZawolano;
     bTab[15] = liczWybor;
 }
